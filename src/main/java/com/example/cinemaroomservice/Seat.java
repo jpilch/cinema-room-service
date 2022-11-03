@@ -1,29 +1,24 @@
 package com.example.cinemaroomservice;
 
 public class Seat {
-    private int row;
-    private int column;
-    private boolean available;
+    final SeatLocation seatLocation;
+    private final int price;
 
-    public Seat(int row, int col) {
-        this.row = row;
-        this.column = col;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
-    public void setColumn(int column) {
-        this.column = column;
+    public Seat(int row, int column) {
+        this.seatLocation = new SeatLocation(row, column);
+        this.price =
+                this.seatLocation.getRow() <= 4 ? 10 : 8;
     }
 
     public int getRow() {
-        return row;
+        return this.seatLocation.getRow();
     }
 
-    public void setRow(int row) {
-        this.row = row;
+    public int getColumn() {
+        return this.seatLocation.getColumn();
     }
 
+    public int getPrice() {
+        return this.price;
+    }
 }
