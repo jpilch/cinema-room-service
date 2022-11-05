@@ -1,36 +1,32 @@
 package com.example.cinemaroomservice;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Cinema {
     private final List<Seat> seats;
     private final HashMap<Seat, Boolean> seatState;
+    private final HashMap<Seat, Ticket> tickets;
+    private final HashMap<String, Ticket> tokens;
     public Cinema() {
+        this.tokens = new HashMap<>();
         this.seats = new LinkedList<>();
         this.seatState = new HashMap<>();
+        this.tickets = new HashMap<>();
         for (int r = 1; r <= 9; r++) {
             for (int c = 1; c <= 9; c++) {
                 Seat seat = new Seat(r, c);
                 this.seats.add(seat);
                 seatState.put(seat, true);
+                tickets.put(seat, new Ticket(seat));
             }
         }
     }
-    public Seat makeReservation(SeatLocation seatLocation) {
-        Seat chosenSeat = null;
+    public Ticket makeReservation(Seat chosenSeat) {
         for (Seat seat : this.seats) {
-            if (seat.getColumn() == seatLocation.getColumn()
-                    && seat.getRow() == seatLocation.getColumn()) {
-                chosenSeat = seat;
-                break;
+            if (chosenSeat.equals(seat) && this.seatState.get(seat)) {
+                this.seatState.put(seat, false);
+                return this.tickets.get(seat);
             }
-        }
-        if (chosenSeat != null && this.seatState.get(chosenSeat)) {
-            this.seatState.put(chosenSeat, false);
-            return chosenSeat;
         }
         return null;
     }
@@ -38,10 +34,10 @@ public class Cinema {
     public AvailableSeats getAvailableSeats() {
         HashSet<Integer> availableRowsSet = new HashSet<>();
         HashSet<Integer> availableColumnsSet = new HashSet<>();
-        List<Seat> availableSeats = new LinkedList<>();
+        List<Ticket> availableTickets = new LinkedList<>();
         for (Seat seat : this.seats) {
             if (this.seatState.get(seat)) {
-                availableSeats.add(seat);
+                availableTickets.add(this.tickets.get(seat));
                 availableRowsSet.add(seat.getRow());
                 availableColumnsSet.add(seat.getColumn());
             }
@@ -49,7 +45,32 @@ public class Cinema {
         return new AvailableSeats(
                 availableRowsSet.size(),
                 availableColumnsSet.size(),
-                availableSeats
+                availableTickets
+        );
+    }
+
+    public void addToken(String token, Ticket ticket) {
+        this.tokens.put(token, ticket);
+    }
+
+    public Ticket refundTicket(String token) {
+        Ticket ticket = this.tokens.get(token);
+        if (ticket != null) {
+            this.tokens.remove(token);
+            this.seatState.put(ticket.seat, true);
+        }
+        return ticket;
+    }
+
+    public Map<String, Integer> getStatistics() {
+        int currentIncome = 0;
+        for (String token : this.tokens.keySet()) {
+            currentIncome += this.tokens.get(token).getPrice();
+        }
+        return Map.of(
+                "current_income", currentIncome,
+                "number_of_available_seats", this.getAvailableSeats().getAvailableSeats().size(),
+                "number_of_purchased_tickets", this.tokens.keySet().size()
         );
     }
 }

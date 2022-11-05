@@ -19,25 +19,25 @@ public class AvailableSeats {
         this.totalColumns = totalColumns;
     }
 
-    public List<Seat> getAvailableSeats() {
-        return availableSeats;
+    public List<Ticket> getAvailableSeats() {
+        return availableTickets;
     }
 
-    public void setAvailableSeats(List<Seat> availableSeats) {
-        this.availableSeats = availableSeats;
+    public void setAvailableSeats(List<Ticket> availableTickets) {
+        this.availableTickets = availableTickets;
     }
 
     private int totalRows;
     private int totalColumns;
-    private List<Seat> availableSeats;
+    private List<Ticket> availableTickets;
 
     public AvailableSeats(
             int totalRows,
             int totalColumns,
-            List<Seat> availableSeats) {
+            List<Ticket> availableTickets) {
         this.totalRows = totalRows;
         this.totalColumns = totalColumns;
-        this.availableSeats = availableSeats;
+        this.availableTickets = availableTickets;
     }
 
 }
